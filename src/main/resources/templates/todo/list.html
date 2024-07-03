@@ -1,0 +1,70 @@
+<!doctype html>
+<!-- Executa o fragmento layout, que está dentro do template base, repassando para esse fragmento, a minha tag title e tag main -->
+<html th:replace="~{base :: layout (~{::title}, ~{::main}) }">
+
+<head>
+  
+  <title>TwTodos - Lista de Tarefas</title>
+
+</head>
+
+<body>
+  
+
+  <main>
+    <h1>Lista de Tarefas</h1>
+    <!-- th:if="${not #lists.isEmpty(todos)}" se não estiver vazia é exibida -->
+    <!-- th:unless="${#lists.isEmpty(todos)} ao contrario do if se true não é exibida se false é exibida -->
+    <table class="table" th:unless="${#lists.isEmpty(todos)}">
+      <thead>
+        <tr>
+          <th scope="col">#</th>
+          <th scope="col">Título</th>
+          <th scope="col">Criado em</th>
+          <th scope="col">Data de entrega</th>
+          <th scope="col">Finalizado em</th>
+          <th scope="col">Ações</th>
+        </tr>
+      </thead>
+      <tbody>
+
+        <tr th:each="todo : ${todos}">
+          <th scope="row" th:text="${todo.id}">1</th>
+          <td th:text="${todo.title}"></td>
+          <td th:text="${#temporals.format(todo.createdAt)}"></td>
+          <td th:text="${#temporals.format(todo.deadline)}"></td>
+          <td th:text="${#temporals.format(todo.fineshedAt) } ?: '-'"></td>
+          <td>
+          
+            <form th:action="@{/finish/{id}(id=${todo.id})}" class="d-inline" method="POST">
+              <button type="submit" class="btn btn-sm btn-primary"
+              th:classappend="${todo.fineshedAt} ? 'disabled' : ''">
+              Concluir</button>
+            </form>
+          
+            <a 
+              th:href="@{/edit/{id}(id=${todo.id})}" class="btn btn-sm btn-secondary"
+              th:classappend="${todo.fineshedAt} ? 'disabled' : ''">
+              Editar
+            </a>
+          
+            <a 
+              th:href="@{/delete/{id}(id=${todo.id})}" class="btn btn-sm btn-danger">
+              Excluir
+            </a>
+          
+          </td>
+        </tr>
+
+      </tbody>
+    </table>
+
+    <p th:if="${#lists.isEmpty(todos)}">Nenhuma tarefa cadastrada</p>
+
+    <!-- para lidar com rotas usar @{/nome_da_rota} -->
+    <a th:href="@{/create}" class="btn btn-primary">Nova tarefa</a>
+  </main>
+
+</body>
+
+</html>
